@@ -1,5 +1,11 @@
-let notas = [];
+let tarefas = [];
 
-for (nota = 0, nota < 4, nota ++){
-    
+for (let i = 0; i < 3; i ++){
+    let tarefa = prompt('Digite a atividade '+ (i + 1) +': ');
+    tarefas.push(tarefa);
 }
+tarefas.shift();
+tarefas.unshift('Nova tarefa');
+
+console.log(tarefas);
+
