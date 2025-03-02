@@ -2,12 +2,10 @@ let valorCompra = Number(prompt('Digite o valor total da compra: '));
 let descontoPercentual = Number(prompt('Digite o percentual de desconto na compra: '));
 
 function calcularDesconto(valorCompra, descontoPercentual){
-    desconto = valorCompra * descontoPercentual / 100;
-    return desconto
+    return valorCompra * descontoPercentual / 100;
 }
 function calcularValorFinal(valorCompra, desconto){
-    valorFinal = valorCompra - desconto;
-    return valorFinal
+    return valorCompra - desconto;
 }
 
 let desconto = calcularDesconto(valorCompra, descontoPercentual);
