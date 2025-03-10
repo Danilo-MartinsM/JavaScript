@@ -1,7 +1,7 @@
 let palavras = [];
-
+const prompt = require('prompt-sync')();
 for (let i = 0; i < 5; i ++){
-    let palavra = prompt('Digite a palavra '+(i + 1) +':');
+    let palavra = prompt('Digite a palavra '+(i + 1) +': ');
     palavras.push(palavra);
 }
 let frequencia = {};
