@@ -1,6 +1,8 @@
 let notas = [];
 let soma = 0;
 
+const prompt = require('prompt-sync')();
+
 for (let i = 0; i < 5; i ++){
     let nota = prompt('Digite a nota '+ (i + 1) +':');
     notas.push(Number(nota));
