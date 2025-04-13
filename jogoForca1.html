@@ -332,8 +332,24 @@
 
     <script>
         // SEU CÓDIGO ORIGINAL (com pequenas adaptações para o visual)
-        const numeroAleatorio = Math.floor(Math.random() * 5);
-        const palavras = ['gato', 'casa', 'flor', 'bola', 'rio'];
+        const palavras = [
+        // Animais
+        'gato', 'cão', 'boi', 'pato', 'peixe', 'rato', 'urso', 'lobo', 'cobra', 'ave',
+        
+        // Objetos
+        'casa', 'mesa', 'copo', 'prato', 'garfo', 'faca', 'sofá', 'cama', 'porta', 'livro',
+        
+        // Natureza
+        'flor', 'sol', 'lua', 'mar', 'rio', 'chuva', 'vento', 'fogo', 'arvore', 'grama',
+        
+        // Alimentos
+        'pão', 'arroz', 'leite', 'ovo', 'carne', 'queijo', 'bolo', 'uva', 'maçã', 'banana',
+        
+        // Partes do corpo
+        'olho', 'nariz', 'boca', 'mão', 'pé', 'braço', 'perna', 'dedo', 'cabelo', 'pele'
+        ];
+
+        const numeroAleatorio = Math.floor(Math.random() * palavras.length);
         const palavra = palavras[numeroAleatorio];
         let palavraCensurada = '';
         let letrasErradas = [];
