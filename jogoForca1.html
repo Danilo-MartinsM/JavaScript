@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca Premium</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 25px 0;
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .info-box h3 {
+            font-size: 1rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .info-box p {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #letras-erradas {
+            color: var(--danger-color);
+        }
+
+        #tentativas {
+            color: var(--primary-color);
+        }
+
+        .word-display {
+            margin: 30px 0;
+            min-height: 60px;
+        }
+
+        #palavra-censurada {
+            font-size: 2.5rem;
+            letter-spacing: 10px;
+            font-weight: bold;
+            color: var(--dark-color);
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        #palpite-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        #palpite-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        #palpite-input::placeholder {
+            color: #bbb;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: var(--transition);
+            font-weight: bold;
+            box-shadow: var(--shadow);
+        }
+
+        button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .hangman-container {
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .hangman-drawing {
+            position: relative;
+            height: 100%;
+        }
+
+        /* Partes do desenho da forca */
+        .base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 10px;
+            background-color: var(--dark-color);
+            border-radius: 5px;
+        }
+
+        .pole {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 100%;
+            background-color: var(--dark-color);
+            border-radius: 5px;
+        }
+
+        .top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 40%;
+            height: 10px;
+            background-color: var(--dark-color);
+            border-radius: 5px;
+        }
+
+        .rope {
+            position: absolute;
+            top: 10px;
+            left: 90%;
+            width: 5px;
+            height: 30px;
+            background-color: var(--dark-color);
+        }
+
+        /* Partes do boneco (aparecem conforme os erros) */
+        .head {
+            position: absolute;
+            top: 40px;
+            left: 85%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 5px solid var(--danger-color);
+            display: none;
+        }
+
+        .body {
+            position: absolute;
+            top: 70px;
+            left: 85%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 50px;
+            background-color: var(--danger-color);
+            display: none;
+        }
+
+        .left-arm, .right-arm {
+            position: absolute;
+            top: 80px;
+            width: 30px;
+            height: 5px;
+            background-color: var(--danger-color);
+            display: none;
+        }
+
+        .left-arm {
+            left: 72%;
+            transform: rotate(30deg);
+        }
+
+        .right-arm {
+            left: 85%;
+            transform: rotate(-30deg);
+        }
+
+        .left-leg, .right-leg {
+            position: absolute;
+            top: 120px;
+            width: 30px;
+            height: 5px;
+            background-color: var(--danger-color);
+            display: none;
+        }
+
+        .left-leg {
+            left: 72%;
+            transform: rotate(-30deg);
+        }
+
+        .right-leg {
+            left: 85%;
+            transform: rotate(30deg);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            #palavra-censurada {
+                font-size: 1.8rem;
+                letter-spacing: 5px;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo da Forca</h1>
+        
+        <div class="hangman-container">
+            <div class="hangman-drawing">
+                <div class="base"></div>
+                <div class="pole"></div>
+                <div class="top"></div>
+                <div class="rope"></div>
+                <div class="head"></div>
+                <div class="body"></div>
+                <div class="left-arm"></div>
+                <div class="right-arm"></div>
+                <div class="left-leg"></div>
+                <div class="right-leg"></div>
+            </div>
+        </div>
+        
+        <div class="word-display">
+            <p id="palavra-censurada"></p>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-box">
+                <h3>Letras Erradas</h3>
+                <p id="letras-erradas"></p>
+            </div>
+            <div class="info-box">
+                <h3>Tentativas Restantes</h3>
+                <p id="tentativas"></p>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="palpite-input" placeholder="Digite uma letra ou palavra" maxlength="20">
+            <button onclick="processarPalpite()">Enviar Palpite</button>
+        </div>
+    </div>
+
+    <script>
+        // SEU CÓDIGO ORIGINAL (com pequenas adaptações para o visual)
+        const numeroAleatorio = Math.floor(Math.random() * 5);
+        const palavras = ['gato', 'casa', 'flor', 'bola', 'rio'];
+        const palavra = palavras[numeroAleatorio];
+        let palavraCensurada = '';
+        let letrasErradas = [];
+        let tentativaRest = 7;
+
+        for (let i = 0; i < palavra.length; i++) {
+            palavraCensurada += "*";
+        }
+
+        // Elementos do boneco da forca
+        const head = document.querySelector('.head');
+        const body = document.querySelector('.body');
+        const leftArm = document.querySelector('.left-arm');
+        const rightArm = document.querySelector('.right-arm');
+        const leftLeg = document.querySelector('.left-leg');
+        const rightLeg = document.querySelector('.right-leg');
+
+        // Atualiza o desenho da forca
+        function atualizarForca() {
+            const erros = 7 - tentativaRest;
+            
+            head.style.display = erros >= 1 ? 'block' : 'none';
+            body.style.display = erros >= 2 ? 'block' : 'none';
+            leftArm.style.display = erros >= 3 ? 'block' : 'none';
+            rightArm.style.display = erros >= 4 ? 'block' : 'none';
+            leftLeg.style.display = erros >= 5 ? 'block' : 'none';
+            rightLeg.style.display = erros >= 6 ? 'block' : 'none';
+        }
+
+        // Função para atualizar a interface
+        function atualizarInterface() {
+            document.getElementById('palavra-censurada').textContent = palavraCensurada;
+            document.getElementById('letras-erradas').textContent = letrasErradas.join(', ');
+            document.getElementById('tentativas').textContent = tentativaRest;
+            atualizarForca();
+        }
+
+        // Função para processar o palpite
+        function processarPalpite() {
+            const palpiteInput = document.getElementById('palpite-input');
+            const palpite = palpiteInput.value.toLowerCase().trim();
+            palpiteInput.value = '';
+            
+            if (!palpite) return;
+
+            if (palpite.length === 1) {
+                if (palavra.indexOf(palpite) === -1) {
+                    if (letrasErradas.indexOf(palpite) === -1) {
+                        letrasErradas.push(palpite);
+                        tentativaRest -= 1;
+                    }
+                } else {
+                    let letras = palavraCensurada.split('');
+                    for (let j = 0; j < palavra.length; j++) {
+                        if (palavra[j] === palpite) {
+                            letras[j] = palpite;
+                        }
+                    }
+                    palavraCensurada = letras.join('');
+                }
+            } else {
+                if (palpite === palavra) {
+                    palavraCensurada = palavra;
+                    setTimeout(() => alert('Palavra correta, parabéns!!!'), 10);
+                } else {
+                    setTimeout(() => alert('Palavra incorreta, tente novamente.'), 10);
+                    tentativaRest -= 1;
+                }
+            }
+
+            if (palavraCensurada === palavra) {
+                setTimeout(() => alert('Parabéns! Você acertou a palavra!'), 10);
+            }
+
+            if (tentativaRest === 0) {
+                setTimeout(() => alert(`Acabou o jogo! A palavra era: ${palavra}`), 10);
+            }
+
+            atualizarInterface();
+        }
+
+        // Permite usar Enter no input
+        document.getElementById('palpite-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processarPalpite();
+            }
+        });
+
+        // Inicializa o jogo
+        atualizarInterface();
+    </script>
+</body>
+</html>

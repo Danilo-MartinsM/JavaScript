@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        #palavra-censurada {
+            font-size: 24px;
+            letter-spacing: 5px;
+            margin: 20px 0;
+        }
+        #letras-erradas {
+            color: red;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo da Forca</h1>
+        <p id="info-palavra"></p>
+        <p id="palavra-censurada"></p>
+        <p>Letras erradas: <span id="letras-erradas"></span></p>
+        <p>Tentativas restantes: <span id="tentativas"></span></p>
+        <input type="text" id="palpite-input" placeholder="Digite uma letra ou palavra">
+        <button onclick="processarPalpite()">Enviar</button>
+    </div>
+
+    <script>
+        // SEU CÓDIGO ORIGINAL (sem alterações)
+        const numeroAleatorio = Math.floor(Math.random() * 5);
+        const palavras = ['gato', 'casa', 'flor', 'bola', 'rio'];
+        const palavra = palavras[numeroAleatorio];
+        let palavraCensurada = '';
+        let letrasErradas = [];
+        let tentativaRest = 7;
+
+        for (let i = 0; i < palavra.length; i++){
+            palavraCensurada += "*";
+        }
+
+        // Função para atualizar a interface
+        function atualizarInterface() {
+            document.getElementById('info-palavra').textContent = `A palavra possui ${palavra.length} letras`;
+            document.getElementById('palavra-censurada').textContent = palavraCensurada;
+            document.getElementById('letras-erradas').textContent = letrasErradas.join(', ');
+            document.getElementById('tentativas').textContent = tentativaRest;
+        }
+
+        // Função para processar o palpite (adaptação mínima para o input HTML)
+        function processarPalpite() {
+            const palpite = document.getElementById('palpite-input').value.toLowerCase();
+            document.getElementById('palpite-input').value = '';
+
+            if (palpite.length === 1){
+                if (palavra.indexOf(palpite) === -1){
+                    if (letrasErradas.indexOf(palpite) === -1){
+                        letrasErradas.push(palpite);
+                        tentativaRest -= 1;
+                    }
+                } else {
+                    let letras = palavraCensurada.split('');
+                    for (let j = 0; j < palavra.length; j++) {
+                        if (palavra[j] === palpite) {
+                            letras[j] = palpite;
+                        }
+                    }
+                    palavraCensurada = letras.join('');
+                }
+            } else {
+                if (palpite === palavra){
+                    palavraCensurada = palavra;
+                    alert('Palavra correta, parabéns!!!');
+                } else {
+                    alert('Palavra incorreta, tente novamente.');
+                    tentativaRest -= 1;
+                }
+            }
+
+            if (palavraCensurada === palavra){
+                alert('Parabéns! Você acertou a palavra!');
+            }
+
+            if (tentativaRest === 0){
+                alert('Acabou o jogo por falta de tentativas restantes.');
+            }
+
+            atualizarInterface();
+        }
+
+        // Inicializa a interface
+        atualizarInterface();
+
+        // Permite usar Enter no input
+        document.getElementById('palpite-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processarPalpite();
+            }
+        });
+    </script>
+</body>
+</html>
