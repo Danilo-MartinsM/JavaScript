@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Forca Mobile</title>
+    <style>
+        :root {
+            --primary: #6C5CE7;
+            --secondary: #00CEFF;
+            --danger: #FF7675;
+            --dark: #2D3436;
+            --light: #F5F6FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 100%;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 10vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .forca-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        /* Partes da forca (estilo simplificado) */
+        .base { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80%; height: 8px; background: white; border-radius: 5px; }
+        .pole { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 8px; height: 100%; background: white; border-radius: 5px; }
+        .top { position: absolute; top: 0; left: 50%; width: 40%; height: 8px; background: white; border-radius: 5px; }
+        .rope { position: absolute; top: 8px; left: 90%; width: 4px; height: 25px; background: #8B4513; }
+        .head, .body, .left-arm, .right-arm, .left-leg, .right-leg {
+            position: absolute;
+            background: var(--danger);
+            display: none;
+        }
+        .head { top: 33px; left: 85%; transform: translateX(-50%); width: 25px; height: 25px; border-radius: 50%; border: 4px solid var(--danger); background: transparent; }
+        .body { top: 58px; left: 85%; transform: translateX(-50%); width: 4px; height: 40px; }
+        .left-arm { top: 65px; left: 72%; width: 25px; height: 4px; transform: rotate(30deg); }
+        .right-arm { top: 65px; left: 85%; width: 25px; height: 4px; transform: rotate(-30deg); }
+        .left-leg { top: 98px; left: 72%; width: 25px; height: 4px; transform: rotate(-30deg); }
+        .right-leg { top: 98px; left: 85%; width: 25px; height: 4px; transform: rotate(30deg); }
+
+        .palavra {
+            font-size: 1.8rem;
+            letter-spacing: 10px;
+            margin: 20px 0;
+            font-weight: 700;
+            word-break: break-all;
+            padding: 0 10px;
+        }
+
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-box {
+            flex: 1;
+        }
+
+        .info-box h3 {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+
+        .info-box p {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        #letras-erradas {
+            color: var(--warning, #FFEAA7);
+            word-break: break-word;
+        }
+
+        .input-group {
+            margin: 25px 0;
+        }
+
+        #palpite-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .teclado-virtual {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tecla {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tecla:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-enviar {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto 0;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                margin-top: 5vh;
+            }
+            
+            .teclado-virtual {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .palavra {
+                font-size: 1.5rem;
+                letter-spacing: 6px;
+            }
+            
+            .forca-container {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JOGO DA FORCA</h1>
+        
+        <div class="forca-container">
+            <div class="base"></div>
+            <div class="pole"></div>
+            <div class="top"></div>
+            <div class="rope"></div>
+            <div class="head"></div>
+            <div class="body"></div>
+            <div class="left-arm"></div>
+            <div class="right-arm"></div>
+            <div class="left-leg"></div>
+            <div class="right-leg"></div>
+        </div>
+        
+        <div class="palavra" id="palavra-censurada"></div>
+        
+        <div class="info-container">
+            <div class="info-box">
+                <h3>TENTATIVAS</h3>
+                <p id="tentativas"></p>
+            </div>
+            <div class="info-box">
+                <h3>LETRAS ERRADAS</h3>
+                <p id="letras-erradas"></p>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="palpite-input" placeholder="Digite uma letra" maxlength="1" inputmode="text">
+            
+            <div class="teclado-virtual" id="teclado-virtual">
+                <!-- Teclas serão geradas pelo JavaScript -->
+            </div>
+            
+            <button class="btn-enviar" onclick="processarPalpite()">ENVIAR</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do jogo
+        const palavras = ['GATO', 'CASA', 'FLOR', 'BOLA', 'RIO', 'SOL', 'LUA', 'MAR', 'PÃO', 'OVO', 
+                         'AVE', 'PATO', 'PEIXE', 'RATO', 'URSO', 'LOBO', 'COBRA', 'LEÃO', 'TIGRE'];
+        
+        const palavra = palavras[Math.floor(Math.random() * palavras.length)];
+        let palavraCensurada = '';
+        let letrasErradas = [];
+        let tentativas = 7;
+        let jogoAcabou = false;
+
+        // Elementos da forca
+        const partesForca = [
+            document.querySelector('.head'),
+            document.querySelector('.body'),
+            document.querySelector('.left-arm'),
+            document.querySelector('.right-arm'),
+            document.querySelector('.left-leg'),
+            document.querySelector('.right-leg')
+        ];
+
+        // Inicializa palavra censurada
+        for (let i = 0; i < palavra.length; i++) {
+            palavraCensurada += '_';
+        }
+
+        // Cria teclado virtual
+        const tecladoVirtual = document.getElementById('teclado-virtual');
+        const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        
+        letras.forEach(letra => {
+            const tecla = document.createElement('button');
+            tecla.className = 'tecla';
+            tecla.textContent = letra;
+            tecla.onclick = () => {
+                if (!jogoAcabou) {
+                    document.getElementById('palpite-input').value = letra;
+                    processarPalpite();
+                }
+            };
+            tecladoVirtual.appendChild(tecla);
+        });
+
+        // Atualiza a forca
+        function atualizarForca() {
+            const erros = letrasErradas.length;
+            partesForca.forEach((parte, index) => {
+                parte.style.display = index < erros ? 'block' : 'none';
+            });
+        }
+
+        // Atualiza a interface
+        function atualizarInterface() {
+            document.getElementById('palavra-censurada').textContent = palavraCensurada;
+            document.getElementById('letras-erradas').textContent = letrasErradas.join(' ');
+            document.getElementById('tentativas').textContent = tentativas;
+            atualizarForca();
+            
+            // Desativa teclas já usadas
+            document.querySelectorAll('.tecla').forEach(tecla => {
+                const letra = tecla.textContent;
+                tecla.disabled = letrasErradas.includes(letra) || palavraCensurada.includes(letra);
+                tecla.style.opacity = tecla.disabled ? '0.5' : '1';
+            });
+        }
+
+        // Processa o palpite
+        function processarPalpite() {
+            if (jogoAcabou) return;
+            
+            const palpiteInput = document.getElementById('palpite-input');
+            let palpite = palpiteInput.value.toUpperCase().trim();
+            palpiteInput.value = '';
+            
+            // Se não tiver palpite do input, pega do botão clicado
+            if (!palpite && window.event) {
+                palpite = window.event.target.textContent;
+            }
+            
+            if (!palpite || palpite.length !== 1) return;
+
+            if (palavra.includes(palpite)) {
+                // Letra correta
+                let novaPalavra = '';
+                for (let i = 0; i < palavra.length; i++) {
+                    novaPalavra += (palavra[i] === palpite || palavraCensurada[i] !== '_') ? palavra[i] : '_';
+                }
+                palavraCensurada = novaPalavra;
+            } else {
+                // Letra errada
+                if (!letrasErradas.includes(palpite)) {
+                    letrasErradas.push(palpite);
+                    tentativas--;
+                }
+            }
+
+            // Verifica vitória/derrota
+            if (palavraCensurada === palavra) {
+                jogoAcabou = true;
+                setTimeout(() => alert('🎉 PARABÉNS! VOCÊ GANHOU!'), 300);
+            } else if (tentativas <= 0) {
+                jogoAcabou = true;
+                setTimeout(() => alert(`FIM DE JOGO! A PALAVRA ERA: ${palavra}`), 300);
+            }
+
+            atualizarInterface();
+        }
+
+        // Permite usar Enter
+        document.getElementById('palpite-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') processarPalpite();
+        });
+
+        // Inicializa o jogo
+        atualizarInterface();
+    </script>
+</body>
+</html>
